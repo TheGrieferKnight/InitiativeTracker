@@ -1,0 +1,31 @@
+{
+  "metadata": {
+    "id": "com.example.stoneheart-race",
+    "name": "Example Race Pack",
+    "version": "1.0.0",
+    "authors": ["Example"],
+    "license": "Private use only",
+    "source": "Example homebrew",
+    "toolVersion": "2.0.8"
+  },
+  "allowlist": {
+    "race": ["Stoneheart"]
+  },
+  "records": [
+    {
+      "type": "race",
+      "id": "Stoneheart",
+      "operation": "add",
+      "payload": {
+        "name": "Stoneheart",
+        "summary": "Tough, resilient humanoids",
+        "description": "Stonehearts are hardy folk with skin like granite and an unyielding spirit.",
+        "abilityScoreIncrease": "+2 Constitution",
+        "speed": "30 feet",
+        "size": "Medium",
+        "traits": ["Darkvision 60 ft", "Stone's Endurance: Once per rest, reduce damage by 1d12 + Con mod"],
+        "languages": ["Common"]
+      }
+    }
+  ]
+}

@@ -1,0 +1,134 @@
+{
+  "metadata": {
+    "id": "com.supreme-magus.campaign-pack",
+    "name": "Supreme Magus Campaign Pack",
+    "version": "1.0.0",
+    "authors": ["Supreme Magus"],
+    "license": "Private use only",
+    "source": "Supreme Magus campaign homebrew",
+    "toolVersion": "2.0.8"
+  },
+  "allowlist": {
+    "race": ["Besessener Mensch (Abomination)", "Behemoth", "Ry (Magical Beast)"],
+    "class": ["Mage"]
+  },
+  "records": [
+    {
+      "type": "race",
+      "id": "Besessener Mensch (Abomination)",
+      "operation": "add",
+      "payload": {
+        "name": "Besessener Mensch (Abomination)",
+        "summary": "Shared body with a dormant Puppeteer Abomination",
+        "description": "A human whose body is shared with a dormant Puppeteer Abomination. The line between human and monster blurs with each use of hidden powers. Constant danger of discovery and loss of control defines this tormented existence.",
+        "abilityScoreIncrease": "+1 Strength, +1 Constitution",
+        "speed": "9 m / 30 ft",
+        "size": "Medium",
+        "type": "Humanoid (Aberration)",
+        "traits": [
+          "Abartige Anpassungen (Level 1): Bonus action, 1 min duration. Choose Chitinpanzer (+2 AC, speed -3 m) or Eldritch-Gliedmaßen (unarmed strikes deal 1d6).",
+          "Chaos-Erfülltes Wirken (Level 1): Once per short rest, cast any known spell without components. Immediately triggers a roll on the Unstable Mutations table.",
+          "Instabile Mutationen (Level 1, Flaw): Each dawn, DC 10 Con save. On failure or natural 1-2 on any d20 test, roll on Unstable Mutations table. DC increases by 2 per consecutive daily success.",
+          "Transformation Stufe 2 (Level 5-6): Choose Effizienter Mörder, Jenseitige Tentakel, Situative Evolution, or Überirdische Sinne.",
+          "Schreckliches Erscheinungsbild (Level 5-6, Flaw): When losing concentration, unconscious, on hallowed ground, or voluntarily — horrific form revealed. Non-evil witnesses become hostile."
+        ],
+        "languages": ["Common"]
+      }
+    },
+    {
+      "type": "race",
+      "id": "Behemoth",
+      "operation": "add",
+      "payload": {
+        "name": "Behemoth",
+        "summary": "Descendant of Tyris, the first griffin",
+        "description": "A descendant of Tyris, the first griffin — a colossal cat-bird hybrid with unparalleled physical strength and an innate talent for Fist Magic. Its true form is a massive winged predator with mighty claws, horns, and a powerful tail.",
+        "abilityScoreIncrease": "+2 Strength, +1 Constitution",
+        "speed": "10.5 m (Human) / 13.5 m (Hybrid & Natural)",
+        "size": "Medium / Large / Huge",
+        "type": "Monstrosity (Griffin)",
+        "traits": [
+          "Gestaltwandel (Level 1): Action to switch between Human (Medium, 10.5 m speed), Hybrid (Large, 13.5 m, +2 Str, no armor), or Natural (Huge, 13.5 m, cannot use equipment).",
+          "Unvergleichlicher Körperbau (Level 1): Count as one size larger for carrying capacity. Advantage on Strength checks/saves vs being grappled, shoved, or knocked prone.",
+          "Natürliche Waffen (Level 1): Proficient with Claws (1d6 slashing), Horns (1d4 piercing), Tail (1d6 bludgeoning).",
+          "Schwingen — unentwickelt (Level 1): Purely cosmetic wings. Grow stronger with level.",
+          "Geschärfte Sinne (Level 1): Proficient in Perception. Darkvision 18 m / 60 ft.",
+          "Gewaltiger Appetit (Level 1, Flaw): Requires double food and water. Disadvantage on attacks if a full meal is missed.",
+          "Schwingen — Gleiten (Level 5-6): No fall damage. Glide 6 m horizontally per 1.5 m fallen.",
+          "Schwingen — Flug (Level 7-8): Flying speed 9 m (Hybrid & Natural form).",
+          "Faustmagie (Level 7-8): Store spells in your body during a short rest. Release stored spells through unarmed strikes as a bonus action.",
+          "Schwingen — Mächtiger Flug (Level 9-12): Flying speed increases to 15 m.",
+          "Faustmagie — Erweiterung (Level 9-12): More spell storage capacity."
+        ],
+        "languages": ["Common"]
+      }
+    },
+    {
+      "type": "race",
+      "id": "Ry (Magical Beast)",
+      "operation": "add",
+      "payload": {
+        "name": "Ry (Magical Beast)",
+        "summary": "Wolf-type magical beast with Fire and Air affinity",
+        "description": "A magical beast descended from ancient wolf-type lineages. Ry are naturally attuned to Fire and Air elements, wielding True Magic innately. They evolve into Skoll (Emperor Beasts) upon reaching higher levels.",
+        "abilityScoreIncrease": "+2 Dexterity, +1 Constitution",
+        "speed": "12 m / 40 ft",
+        "size": "Medium",
+        "type": "Monstrosity (Beast)",
+        "traits": [
+          "Echte Magie: Feuer & Luft (Level 1): Casting spells of these two elements requires no components.",
+          "Luftklingen-Ward (Level 1): When you Dash or move 6 m in a straight line, use reaction to gain +2 AC for 1 round. Melee attackers take 1d4 piercing damage. PB times per long rest. Scales to 1d6 at level 10, 1d8 at level 13.",
+          "Geschärfte Sinne (Level 1): Proficient in Perception. Advantage on Wisdom (Perception) checks relying on smell.",
+          "Waffenführung (Knüppel) (Level 1): Proficient with blunt melee weapons.",
+          "Instinktgebundene Magie (Level 1, Flaw): True Magic only works with Fire and Air elements. Other elements require normal components and have disadvantage on attack rolls.",
+          "Geschwindigkeitsschub (Level 3): Bonus action, +6 m speed for 1 minute. Once per short or long rest.",
+          "Luftklingen-Verbesserung (Level 7): Air Blade Ward damage increases to 1d6.",
+          "Evolution — Skoll (Level 11): Gain flying speed 12 m, Lebensesser (temp HP on kill), Wilde Jagd (see invisibility, +6 m speed, advantage on attacks for 1 min, 1/long rest)."
+        ],
+        "languages": ["Common"]
+      }
+    },
+    {
+      "type": "class",
+      "id": "Mage",
+      "operation": "add",
+      "payload": {
+        "name": "Mage",
+        "description": "The standard path of all magically gifted citizens of the Griffon Kingdom. Mages channel ambient world energy through memorized runic patterns, hand signs, and verbal incantations. Their mana cores grow naturally with age and practice.",
+        "hitDice": "d6",
+        "primaryAbility": "int",
+        "savingThrows": ["int", "wis"],
+        "armorProficiencies": [],
+        "weaponProficiencies": ["Simple weapons"],
+        "toolProficiencies": [],
+        "spellcastingAbility": "int",
+        "spellcaster": true,
+        "numSkillChoices": 2,
+        "skillChoices": ["Arcana", "History", "Investigation", "Medicine", "Nature", "Perception", "Insight", "Persuasion"],
+        "spellcastingProgression": "full",
+        "featuresByLevel": {
+          "1": ["Cantrips (3)", "Mana Dice Pool (4d6)", "Formula Preparation", "Mage Foundation (1st)"],
+          "2": ["Mage Foundation (2nd)"],
+          "3": ["Mage Foundation (3rd)"],
+          "4": ["Cantrip Improvement (+1 cantrip)", "Ability Score Improvement"],
+          "5": [],
+          "6": ["Overcasting", "Academic Specialization (Apprentice)"],
+          "7": [],
+          "8": ["Ability Score Improvement"],
+          "9": [],
+          "10": ["Specialization (Practitioner) or Dual Specialization"],
+          "11": [],
+          "12": ["Ability Score Improvement"],
+          "13": [],
+          "14": [],
+          "15": ["Specialization (Master)"],
+          "16": ["Ability Score Improvement"],
+          "17": [],
+          "18": [],
+          "19": ["Ability Score Improvement"],
+          "20": []
+        }
+      }
+    }
+  ]
+}
