@@ -103,6 +103,7 @@
         "toolProficiencies": [],
         "spellcastingAbility": "int",
         "spellcaster": true,
+        "spellcastingSystem": "mana-dice",
         "numSkillChoices": 2,
         "skillChoices": ["Arcana", "History", "Investigation", "Medicine", "Nature", "Perception", "Insight", "Persuasion"],
         "spellcastingProgression": "full",

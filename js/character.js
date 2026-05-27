@@ -1473,6 +1473,39 @@ import { getSpellSlotsForClassLevel as _getSpellSlotsForClassLevel, getPactMagic
         }
       }
 
+      function updateManaDiceDisplay() {
+        const section = $('manaDiceSection');
+        const spellSlotSection = $('spellSlotsSection');
+        if (!section) return;
+
+        const char = getCurrentCharacter();
+        if (!char || !char.manaDice) {
+          section.style.display = 'none';
+          if (spellSlotSection) spellSlotSection.style.display = '';
+          return;
+        }
+        const md = char.manaDice;
+        const charClass = char.charClass || char.class || '';
+        const classData = window.LevelUpData?.CLASS_DATA?.[charClass];
+        const isManaDiceClass = classData?.spellcastingSystem === 'mana-dice';
+
+        if (!isManaDiceClass || !md.max) {
+          section.style.display = 'none';
+          if (spellSlotSection) spellSlotSection.style.display = '';
+          return;
+        }
+
+        section.style.display = 'block';
+        if (spellSlotSection) spellSlotSection.style.display = 'none';
+        $('manaDiceCurrent').value = md.current ?? md.max;
+        $('manaDiceMax').value = md.max;
+        $('manaDiceSize').value = `d${md.size}`;
+        const tierEl = $('manaDiceMaxTier');
+        if (tierEl) {
+          tierEl.textContent = md.maxTier ? `Max Spell Tier: ${md.maxTier}` : 'Max Spell Tier: —';
+        }
+      }
+
       function clearSpellSearchResults() {
         const container = $('spellSearchResults');
         if (container) container.innerHTML = '';
@@ -2449,6 +2482,14 @@ import { getSpellSlotsForClassLevel as _getSpellSlotsForClassLevel, getPactMagic
           $('pactMax').value   = pact.max ?? '';
           $('pactUsed').value  = pact.used ?? '';
 
+          // Mana Dice
+          if (char.manaDice) {
+            $('manaDiceMax').value = char.manaDice.max ?? '';
+            $('manaDiceCurrent').value = char.manaDice.current ?? '';
+            $('manaDiceSize').value = char.manaDice.size ? `d${char.manaDice.size}` : '';
+          }
+          updateManaDiceDisplay();
+
           syncSpellListFromCharacter(char);
           syncAttackListFromCharacter(char);
           syncInventoryFromCharacter(char);
@@ -2865,6 +2906,31 @@ import { getSpellSlotsForClassLevel as _getSpellSlotsForClassLevel, getPactMagic
           }
         }
 
+        // Initialize mana dice for classes that use the mana dice system
+        if (wizardData.class && window.LevelUpData?.usesManaDice?.(wizardData.class)) {
+          const level = wizardData.level || 1;
+          const mdData = window.LevelUpData.getManaDiceData(wizardData.class, level);
+          if (mdData) {
+            const char = getCurrentCharacter();
+            if (!char) {
+              console.warn('⚠ No character found for mana dice initialization');
+            } else {
+              char.manaDice = {
+              max: mdData.dice,
+              current: mdData.dice,
+              size: mdData.size,
+              maxTier: mdData.maxTier
+            };
+            $('manaDiceMax').value = mdData.dice;
+            $('manaDiceCurrent').value = mdData.dice;
+            $('manaDiceSize').value = `d${mdData.size}`;
+            const tierEl = $('manaDiceMaxTier');
+            if (tierEl) tierEl.textContent = `Max Spell Tier: ${mdData.maxTier}`;
+          }
+          }
+        }
+        updateManaDiceDisplay();
+
         // Populate starting equipment (class + background)
         if (wizardData.startingEquipment && wizardData.startingEquipment.length > 0) {
           // Set the inventory list
@@ -3047,6 +3113,12 @@ import { getSpellSlotsForClassLevel as _getSpellSlotsForClassLevel, getPactMagic
 
            // Spellcasting resources
           spellcastingAbility: '',
+          manaDice: {
+            max: 0,
+            current: 0,
+            size: 6,
+            maxTier: 0
+          },
           spellSlots: {
             1: { max: '', used: '' },
             2: { max: '', used: '' },
@@ -3327,6 +3399,14 @@ import { getSpellSlotsForClassLevel as _getSpellSlotsForClassLevel, getPactMagic
             current: getNum('res3Current'),
             max: getNum('res3Max')
           }
+        };
+        
+        // Mana Dice
+        char.manaDice = {
+          max: getNum('manaDiceMax'),
+          current: getNum('manaDiceCurrent'),
+          size: parseInt($('manaDiceSize')?.value?.replace('d', '') || '0', 10),
+          maxTier: char.manaDice?.maxTier || 0
         };
         
         // NEW: spell slots 1–9
@@ -4098,6 +4178,21 @@ import { getSpellSlotsForClassLevel as _getSpellSlotsForClassLevel, getPactMagic
         const pactUsedEl = $('pactUsed');
         if (pactUsedEl) pactUsedEl.value = 0;
 
+        // Mana Dice: recover half (rounded up) on short rest
+        const mdCurEl = $('manaDiceCurrent');
+        const mdMaxEl = $('manaDiceMax');
+        if (mdCurEl && mdMaxEl) {
+          const maxVal = parseInt(mdMaxEl.value || '0', 10);
+          const curVal = parseInt(mdCurEl.value || '0', 10);
+          if (maxVal > 0) {
+            const recovered = Math.ceil(maxVal / 2);
+            const newVal = Math.min(maxVal, curVal + recovered);
+            if (newVal !== curVal) {
+              mdCurEl.value = newVal;
+            }
+          }
+        }
+
         // Reset generic resources that are marked for short rest
         const pairs = [
           { cur: 'res1Current', max: 'res1Max' },
@@ -4172,6 +4267,14 @@ import { getSpellSlotsForClassLevel as _getSpellSlotsForClassLevel, getPactMagic
           if (maxVal !== '') curEl.value = maxVal;
         });
 
+        // Mana Dice: restore to full on long rest
+        const mdCurEl = $('manaDiceCurrent');
+        const mdMaxEl = $('manaDiceMax');
+        if (mdCurEl && mdMaxEl) {
+          const maxVal = mdMaxEl.value.trim();
+          if (maxVal !== '') mdCurEl.value = maxVal;
+        }
+
         // Reset spell slots (used -> 0)
         for (let lvl = 1; lvl <= 9; lvl++) {
           const usedEl = $(`slots${lvl}Used`);
@@ -4182,7 +4285,7 @@ import { getSpellSlotsForClassLevel as _getSpellSlotsForClassLevel, getPactMagic
         const pactUsedEl = $('pactUsed');
         if (pactUsedEl) pactUsedEl.value = 0;
 
-        alert('Long Rest complete!\n\n✓ HP restored to maximum\n✓ Temp HP cleared\n✓ Hit dice restored (at least half)\n✓ All spell slots restored\n✓ Pact slots restored\n✓ All abilities/resources restored\n\nRemember to click Save!');
+        alert('Long Rest complete!\n\n✓ HP restored to maximum\n✓ Temp HP cleared\n✓ Hit dice restored (at least half)\n✓ All spell slots restored\n✓ Pact slots restored\n✓ All abilities/resources restored\n✓ Mana Dice restored\n\nRemember to click Save!');
       }
 
       // ---------- Events ----------
@@ -4585,6 +4688,114 @@ import { getSpellSlotsForClassLevel as _getSpellSlotsForClassLevel, getPactMagic
               usedEl.value = 0;
               saveCurrentCharacter();
             }
+          });
+        }
+
+        // Mana Dice button handlers
+        const spendBtn = $('manaDiceSpendBtn');
+        const restoreBtn = $('manaDiceRestoreBtn');
+        const powerPoolBtn = $('manaDicePowerPoolBtn');
+        const overcastBtn = $('manaDiceOvercastBtn');
+        const clearPoolBtn = $('powerPoolClearBtn');
+
+        if (spendBtn) {
+          spendBtn.addEventListener('click', () => {
+            const curEl = $('manaDiceCurrent');
+            const cur = parseInt(curEl?.value || '0', 10);
+            const tier = prompt('Spell Tier to cast:', '1');
+            const tierNum = parseInt(tier || '0', 10);
+            if (!tierNum || tierNum < 1) return;
+            const cost = tierNum;
+            if (cost > cur) {
+              alert(`Not enough mana dice! You have ${cur}, need ${cost}.`);
+              return;
+            }
+            curEl.value = cur - cost;
+            saveCurrentCharacter();
+          });
+        }
+
+        if (restoreBtn) {
+          restoreBtn.addEventListener('click', () => {
+            const curEl = $('manaDiceCurrent');
+            const maxEl = $('manaDiceMax');
+            if (!curEl || !maxEl) return;
+            const cur = parseInt(curEl.value || '0', 10);
+            const max = parseInt(maxEl.value || '0', 10);
+            const amount = parseInt(prompt('Dice to restore:', '1') || '0', 10);
+            if (!amount || amount < 1) return;
+            curEl.value = Math.min(max, cur + amount);
+            saveCurrentCharacter();
+          });
+        }
+
+        if (powerPoolBtn) {
+          powerPoolBtn.addEventListener('click', () => {
+            const curEl = $('manaDiceCurrent');
+            const sizeEl = $('manaDiceSize');
+            if (!curEl || !sizeEl) return;
+            const cur = parseInt(curEl.value || '0', 10);
+            const size = parseInt((sizeEl.value || '').replace('d', '') || '0', 10);
+            if (!cur || !size) {
+              alert('No mana dice available to roll.');
+              return;
+            }
+            const count = parseInt(prompt('Dice to spend on this spell:', '1') || '0', 10);
+            if (!count || count < 1 || count > cur) {
+              alert(`Enter a number between 1 and ${cur}.`);
+              return;
+            }
+            // Roll the dice
+            let total = 0;
+            const rolls = [];
+            for (let i = 0; i < count; i++) {
+              const roll = Math.floor(Math.random() * size) + 1;
+              rolls.push(roll);
+              total += roll;
+            }
+            // Deduct from pool
+            curEl.value = cur - count;
+            // Show result
+            const resultDiv = $('powerPoolResult');
+            const totalEl = $('powerPoolTotal');
+            const diceEl = $('powerPoolDice');
+            const poolSizeEl = $('powerPoolSize');
+            if (resultDiv && totalEl && diceEl && poolSizeEl) {
+              resultDiv.style.display = 'block';
+              totalEl.textContent = total;
+              diceEl.textContent = count;
+              poolSizeEl.textContent = size;
+            }
+            saveCurrentCharacter();
+          });
+        }
+
+        if (overcastBtn) {
+          overcastBtn.addEventListener('click', () => {
+            const curEl = $('manaDiceCurrent');
+            const maxEl = $('manaDiceMax');
+            if (!curEl || !maxEl) return;
+            const cur = parseInt(curEl.value || '0', 10);
+            const tier = prompt('Overcast to which spell tier? (Your max tier + 1):', '');
+            const tierNum = parseInt(tier || '0', 10);
+            if (!tierNum || tierNum < 1) return;
+            const cost = tierNum * 2;
+            if (cost > cur) {
+              alert(`Not enough mana dice! You have ${cur}, need ${cost}.`);
+              return;
+            }
+            const saveDc = 10 + tierNum;
+            const confirmed = confirm(`Overcast to Tier ${tierNum}?\nDice cost: ${cost} (doubled)\nConstitution save DC: ${saveDc}\n\nOn failure, the spell fizzles and you take ${cost} psychic damage.`);
+            if (!confirmed) return;
+            curEl.value = cur - cost;
+            saveCurrentCharacter();
+          });
+        }
+
+        if (clearPoolBtn) {
+          clearPoolBtn.addEventListener('click', () => {
+            const resultDiv = $('powerPoolResult');
+            if (resultDiv) resultDiv.style.display = 'none';
           });
         }
 
@@ -5336,9 +5547,10 @@ import { getSpellSlotsForClassLevel as _getSpellSlotsForClassLevel, getPactMagic
           c.skills = c.skills || base.skills;
           c.senses = c.senses || base.senses;
 
-          // NEW: ensure spell slots / pact slots exist on old characters
+          // NEW: ensure spell slots / pact slots / mana dice exist on old characters
           c.spellSlots = c.spellSlots || base.spellSlots;
           c.pactSlots  = c.pactSlots  || base.pactSlots;
+          c.manaDice = c.manaDice || { ...base.manaDice };
 
           // NEW: ensure attacks array exists on old characters
           c.attacks = Array.isArray(c.attacks) ? c.attacks : [];

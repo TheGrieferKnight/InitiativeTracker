@@ -8,6 +8,24 @@
  */
 
 /**
+ * Roll mana dice for Power Pool and return the total.
+ * @param {number} count - Number of dice to roll
+ * @param {number} sides - Number of sides on each die
+ * @param {() => number} [randomFn=Math.random] - Random function (for testing)
+ * @returns {{ rolls: number[], total: number }}
+ */
+export function rollPowerPool(count, sides, randomFn = Math.random) {
+  const rolls = [];
+  let total = 0;
+  for (let i = 0; i < count; i++) {
+    const roll = Math.floor(randomFn() * sides) + 1;
+    rolls.push(roll);
+    total += roll;
+  }
+  return { rolls, total };
+}
+
+/**
  * Roll a single die
  * @param {number} sides - Number of sides on the die
  * @param {() => number} [randomFn=Math.random] - Random function (for testing)

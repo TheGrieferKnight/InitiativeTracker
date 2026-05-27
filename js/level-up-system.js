@@ -2465,6 +2465,26 @@ const LevelUpSystem = (function() {
     }
     levelUpData.resourceUpdateStatus = resourceUpdateStatus;
 
+    // Update mana dice for classes using the mana dice system
+    try {
+      const mdClassName = extractClassName(character.charClass || character.class);
+      if (mdClassName && LevelUpData.usesManaDice && LevelUpData.usesManaDice(mdClassName)) {
+        const mdData = LevelUpData.getManaDiceData(mdClassName, levelUpData.newLevel);
+        if (mdData) {
+          character.manaDice = character.manaDice || {};
+          const oldMax = character.manaDice.max || 0;
+          character.manaDice.max = mdData.dice;
+          character.manaDice.size = mdData.size;
+          character.manaDice.maxTier = mdData.maxTier;
+          // Replenish to new max (like a long rest)
+          character.manaDice.current = mdData.dice;
+          console.log(`📈 Updated Mana Dice: ${oldMax} → ${mdData.dice}d${mdData.size} (Tier ${mdData.maxTier})`);
+        }
+      }
+    } catch (e) {
+      console.warn('Could not update mana dice:', e);
+    }
+
     // Update hit dice
     // Get the class data to determine hit die size
     const className = extractClassName(character.charClass || character.class);

@@ -3180,6 +3180,56 @@ window.LevelUpData = (function() {
     ]
   };
 
+  // ============================================================
+  // MANA DICE TABLE (homebrew custom casting resource)
+  // Used by classes with spellcastingSystem === 'mana-dice'
+  // ============================================================
+  const MANA_DICE_TABLE = {
+    'Mage': {
+      1: { dice: 4, size: 6, maxTier: 1 },
+      2: { dice: 4, size: 6, maxTier: 1 },
+      3: { dice: 6, size: 6, maxTier: 2 },
+      4: { dice: 6, size: 6, maxTier: 2 },
+      5: { dice: 6, size: 6, maxTier: 2 },
+      6: { dice: 8, size: 8, maxTier: 3 },
+      7: { dice: 8, size: 8, maxTier: 3 },
+      8: { dice: 8, size: 8, maxTier: 3 },
+      9: { dice: 10, size: 8, maxTier: 4 },
+      10: { dice: 10, size: 8, maxTier: 4 },
+      11: { dice: 10, size: 8, maxTier: 4 },
+      12: { dice: 12, size: 10, maxTier: 5 },
+      13: { dice: 12, size: 10, maxTier: 5 },
+      14: { dice: 12, size: 10, maxTier: 5 },
+      15: { dice: 14, size: 10, maxTier: 6 },
+      16: { dice: 14, size: 10, maxTier: 6 },
+      17: { dice: 14, size: 10, maxTier: 6 },
+      18: { dice: 16, size: 12, maxTier: 7 },
+      19: { dice: 16, size: 12, maxTier: 7 },
+      20: { dice: 16, size: 12, maxTier: 7 }
+    }
+  };
+
+  /**
+   * Get mana dice data for a character
+   * @param {string} className - The character's class
+   * @param {number} level - The character's level
+   * @returns {{ dice: number, size: number, maxTier: number }|null}
+   */
+  function getManaDiceData(className, level) {
+    const table = MANA_DICE_TABLE[className];
+    if (!table) return null;
+    return table[level] || null;
+  }
+
+  /**
+   * Check if a class uses the mana dice system
+   * @param {string} className
+   * @returns {boolean}
+   */
+  function usesManaDice(className) {
+    return !!MANA_DICE_TABLE[className];
+  }
+
   /**
    * Get class resources for a character
    * @param {string} className - The character's class
@@ -3696,6 +3746,7 @@ window.LevelUpData = (function() {
     SUBRACE_DATA,
     DEFAULT_CLASS_WEAPONS,
     CLASS_RESOURCES,
+    MANA_DICE_TABLE,
     ARTIFICER_INFUSIONS,
 
     // 2024 PHB XP thresholds — total XP required to reach each level
@@ -3754,6 +3805,14 @@ window.LevelUpData = (function() {
      */
     getClassResources(className, level, stats) {
       return getClassResources(className, level, stats);
+    },
+
+    getManaDiceData(className, level) {
+      return getManaDiceData(className, level);
+    },
+
+    usesManaDice(className) {
+      return usesManaDice(className);
     },
 
     // Artificer Infusion helpers

@@ -2544,7 +2544,7 @@
                         </div>
 
                         <!-- NEW: Spell Slots + Pact Slots -->
-                        <div class="mb-3">
+                        <div class="mb-3" id="spellSlotsSection">
                           <label class="form-label small">Spell Slots</label>
                           <div class="table-responsive">
                             <table class="table table-sm table-dark align-middle mb-2">
@@ -2741,7 +2741,66 @@
                             </div>
                           </div>
                         </div>
-                      
+
+                        <!-- Mana Dice Pool (for homebrew mana-dice classes like Mage) -->
+                        <div id="manaDiceSection" class="mb-3" style="display:none;">
+                          <label class="form-label small">Mana Dice Pool</label>
+                          <div class="card bg-dark border-secondary">
+                            <div class="card-body py-2">
+                              <div class="row g-2 align-items-end small">
+                                <div class="col-4">
+                                  <label for="manaDiceCurrent" class="form-label mb-1">Current</label>
+                                  <input id="manaDiceCurrent" type="number" min="0"
+                                         class="form-control form-control-sm text-center" />
+                                </div>
+                                <div class="col-4">
+                                  <label for="manaDiceMax" class="form-label mb-1">Max</label>
+                                  <input id="manaDiceMax" type="number" min="0" readonly
+                                         class="form-control form-control-sm text-center bg-secondary bg-opacity-25" />
+                                </div>
+                                <div class="col-4">
+                                  <label for="manaDiceSize" class="form-label mb-1">Die Size</label>
+                                  <input id="manaDiceSize" type="text" readonly
+                                         class="form-control form-control-sm text-center bg-secondary bg-opacity-25" />
+                                </div>
+                              </div>
+                              <div class="row g-2 align-items-center small mt-2">
+                                <div class="col-12">
+                                  <div class="btn-group btn-group-sm w-100">
+                                    <button class="btn btn-outline-success btn-sm" id="manaDiceSpendBtn" title="Spend dice">
+                                      <i class="bi bi-dash-circle"></i> Spend
+                                    </button>
+                                    <button class="btn btn-outline-info btn-sm" id="manaDiceRestoreBtn" title="Restore dice">
+                                      <i class="bi bi-plus-circle"></i> Restore
+                                    </button>
+                                    <button class="btn btn-outline-warning btn-sm" id="manaDicePowerPoolBtn" title="Roll Power Pool">
+                                      <i class="bi bi-dice-5"></i> Power Pool
+                                    </button>
+                                    <button class="btn btn-outline-danger btn-sm" id="manaDiceOvercastBtn" title="Overcast">
+                                      <i class="bi bi-lightning"></i> Overcast
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                              <div class="row g-2 align-items-center small mt-1">
+                                <div class="col-12">
+                                  <span class="text-muted" id="manaDiceMaxTier">Max Spell Tier: —</span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!-- Power Pool Roll Result Display -->
+                          <div id="powerPoolResult" class="mt-1 small" style="display:none;">
+                            <div class="alert alert-info py-1 px-2 mb-0">
+                              <strong>Power Pool:</strong> <span id="powerPoolTotal">0</span>
+                              <span class="text-muted">(rolled <span id="powerPoolDice">0</span>d<span id="powerPoolSize">0</span>)</span>
+                              <button class="btn btn-sm btn-outline-secondary ms-2" id="powerPoolClearBtn">
+                                <i class="bi bi-x"></i>
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                       
                         <!-- Existing search + results stay unchanged below this -->
                         <div class="mb-2">
                           <div class="input-group input-group-sm mb-2">

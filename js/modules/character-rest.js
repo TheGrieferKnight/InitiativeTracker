@@ -129,3 +129,29 @@ export function applyLongRest(char) {
 
   return char;
 }
+
+/**
+ * Apply short rest mana dice recovery (recover half, rounded up).
+ * @param {{ manaDice?: { current?: number, max?: number } }} char
+ * @returns {{ current: number, max: number }|null}
+ */
+export function applyShortRestManaDice(char) {
+  if (!char?.manaDice?.max) return null;
+  const max = char.manaDice.max;
+  const cur = char.manaDice.current ?? max;
+  const recovered = Math.ceil(max / 2);
+  const newCur = Math.min(max, cur + recovered);
+  char.manaDice.current = newCur;
+  return { current: newCur, max };
+}
+
+/**
+ * Apply long rest mana dice recovery (restore to full).
+ * @param {{ manaDice?: { current?: number, max?: number } }} char
+ * @returns {{ current: number, max: number }|null}
+ */
+export function applyLongRestManaDice(char) {
+  if (!char?.manaDice?.max) return null;
+  char.manaDice.current = char.manaDice.max;
+  return { current: char.manaDice.max, max: char.manaDice.max };
+}
