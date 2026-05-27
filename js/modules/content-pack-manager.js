@@ -1003,30 +1003,80 @@ export function createContentPackManager(userOptions = {}) {
       const existing = packsCache.findIndex((entry) => entry.id === id);
       if (existing >= 0) continue;
 
-      const normalized = normalizePack(structuredClone(raw));
-      const canonicalText = stableStringify(normalized);
-      const hash = await computeSha256(canonicalText);
-      const now = new Date().toISOString();
+      try {
+        const normalized = normalizePack(structuredClone(raw));
+        const canonicalText = stableStringify(normalized);
+        const hash = await computeSha256(canonicalText);
+        const now = new Date().toISOString();
 
-      packsCache.push({
-        id: normalized.metadata.id,
-        pack: normalized,
-        rawText: JSON.stringify(raw, null, 2),
-        sha256: hash,
-        enabled: true,
-        recordCount: normalized.records.length,
-        importedAt: now,
-        updatedAt: now,
-        sourceName: '(built-in)',
-        warnings: []
-      });
+        packsCache.push({
+          id: normalized.metadata.id,
+          pack: normalized,
+          rawText: JSON.stringify(raw, null, 2),
+          sha256: hash,
+          enabled: true,
+          recordCount: normalized.records.length,
+          importedAt: now,
+          updatedAt: now,
+          sourceName: '(built-in)',
+          warnings: []
+        });
 
-      console.log(`📦 Auto-loaded built-in content pack: ${normalized.metadata.name} v${normalized.metadata.version}`);
+        console.log(`📦 Auto-loaded built-in content pack: ${normalized.metadata.name} v${normalized.metadata.version}`);
+      } catch (err) {
+        console.error(`❌ Failed to seed built-in pack "${raw.metadata?.name || id}":`, err);
+      }
     }
     if (BUILT_IN_PACKS.length > 0) {
+      const allSeeded = BUILT_IN_PACKS.every(raw =>
+        packsCache.some(entry => entry.id === raw.metadata.id)
+      );
+      if (!allSeeded) {
+        console.warn(
+          '%c⚠ Built-in pack seeding incomplete. Run ContentPackManager.debugSeed() in the console to retry with verbose logging.',
+          'font-weight: bold; color: #ff6b35; font-size: 14px;'
+        );
+      }
       rebuildContext();
       await persist();
     }
+  }
+
+  async function debugSeed() {
+    await ensureInitialized();
+    console.group('🔍 Built-in Pack Debug');
+    console.log('BUILT_IN_PACKS count:', BUILT_IN_PACKS.length);
+    for (const raw of BUILT_IN_PACKS) {
+      const id = raw.metadata.id;
+      const existing = packsCache.findIndex((entry) => entry.id === id);
+      console.log(`Pack "${id}": ${existing >= 0 ? '✅ already in cache' : '❌ NOT in cache — attempting to seed...'}`);
+      if (existing < 0) {
+        try {
+          const normalized = normalizePack(structuredClone(raw));
+          const hash = await computeSha256(stableStringify(normalized));
+          packsCache.push({
+            id: normalized.metadata.id,
+            pack: normalized,
+            rawText: JSON.stringify(raw, null, 2),
+            sha256: hash,
+            enabled: true,
+            recordCount: normalized.records.length,
+            importedAt: new Date().toISOString(),
+            updatedAt: new Date().toISOString(),
+            sourceName: '(built-in)',
+            warnings: []
+          });
+          console.log('  ✅ Seeded successfully');
+        } catch (err) {
+          console.error('  ❌ Seeding failed:', err);
+        }
+      }
+    }
+    rebuildContext();
+    await persist();
+    console.log('Context rebuilt and persisted.');
+    console.groupEnd();
+    return { success: true };
   }
 
   function getPublicPackById(id) {
@@ -1175,7 +1225,8 @@ export function createContentPackManager(userOptions = {}) {
     togglePack,
     removePack,
     exportPack,
-    clearAll
+    clearAll,
+    debugSeed
   };
 }
 
